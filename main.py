@@ -4,10 +4,19 @@ from data.read_data import read_data
 from sklearn.model_selection import train_test_split
 import numpy as np
 
+
+generateValData = True
+
 # Read data
 X, y = read_data()
-# Artificially split data into train and validation
-X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=123)
+
+if generateValData:
+    # Artificially split data into train and validation
+    X_train, X_val, y_train, y_val = train_test_split(
+        X, y, test_size=0.2, random_state=123
+    )
+else:
+    X_train, X_val, y_train, y_val = X, X, y, y
 
 # Instantiate predictor
 model = SimpleNNPredictor()
