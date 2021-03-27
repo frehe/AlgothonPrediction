@@ -20,7 +20,29 @@ class SimpleNNPredictor(Prediction):
         self.pca = decomposition.PCA(n_components=15, random_state=123)
 
         self.model = neural_network.MLPRegressor(
-            hidden_layer_sizes=(100, 100, 100, 100), activation="relu", random_state=123
+            hidden_layer_sizes=(100, 200, 400, 400, 200, 100),
+            activation="relu",
+            random_state=123,
+            solver="adam",
+            alpha=0.0001,
+            batch_size="auto",
+            learning_rate="constant",
+            learning_rate_init=0.001,
+            power_t=0.5,
+            max_iter=200,
+            shuffle=True,
+            tol=0.0001,
+            verbose=False,
+            warm_start=False,
+            momentum=0.9,
+            nesterovs_momentum=True,
+            early_stopping=True,
+            validation_fraction=0.1,
+            beta_1=0.9,
+            beta_2=0.999,
+            epsilon=1e-08,
+            n_iter_no_change=10,
+            max_fun=15000,
         )
 
         self.pipeline = pipeline.make_pipeline(self.model)
