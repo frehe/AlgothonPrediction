@@ -17,7 +17,7 @@ class SimpleNNPredictor(Prediction):
 
         self.scaler = preprocessing.StandardScaler()
         self.normalizer = preprocessing.Normalizer()
-        self.pca = decomposition.PCA(n_components=15, random_state=123)
+        self.pca = decomposition.PCA(n_components=20, random_state=123)
 
         self.model = neural_network.MLPRegressor(
             hidden_layer_sizes=(100, 200, 400, 400, 200, 100),
