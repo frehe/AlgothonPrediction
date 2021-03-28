@@ -5,6 +5,7 @@ from sklearn import (
     svm,
     feature_selection,
     neural_network,
+    gaussian_process,
     pipeline,
     decomposition,
     model_selection,
@@ -12,25 +13,41 @@ from sklearn import (
 from scipy import stats
 
 
+param_grid = [
+    {
+        "hidden_layer_sizes": [
+            (10, 20, 20, 20, 10),
+            (50, 50, 50, 50, 50),
+            (100, 200, 200, 200, 200, 50),
+            (50, 50, 50, 50, 50, 50, 20, 10),
+            (400, 400, 400, 400, 400, 200, 100),
+        ],
+        "alpha": [0.001, 0.005, 0.01],
+    }
+]
+
+
 class SimpleNNPredictor(Prediction):
-    def __init__(self, **params):
+    def __init__(self, hp_opt: bool, **params):
         super(SimpleNNPredictor, self).__init__(**params)
 
         self.scaler = preprocessing.StandardScaler()
         self.normalizer = preprocessing.Normalizer()
         self.pca = decomposition.PCA(n_components=20, random_state=123)
 
+        self.hp_opt = hp_opt
+
         self.model = neural_network.MLPRegressor(
-            hidden_layer_sizes=(200, 400, 400, 400, 400, 200, 100),
+            hidden_layer_sizes=(500, 500, 500, 500, 500, 500, 400, 200, 100, 50),
             activation="relu",
             random_state=123,
             solver="adam",
-            alpha=0.005,
+            alpha=0.002,
             batch_size="auto",
             learning_rate="constant",
             learning_rate_init=0.001,
             power_t=0.5,
-            max_iter=200,
+            max_iter=400,
             shuffle=True,
             tol=0.0001,
             verbose=False,
@@ -46,6 +63,15 @@ class SimpleNNPredictor(Prediction):
             max_fun=15000,
         )
         # self.model = svm.SVR(kernel='rbf', C=1, gamma=0.1, epsilon=.1)
+        # self.model = gaussian_process.GaussianProcessRegressor(random_state=123)
+
+        if self.hp_opt:
+            self.model = model_selection.GridSearchCV(
+                n_jobs=8,
+                estimator=self.model,
+                param_grid=param_grid,
+                scoring="explained_variance",
+            )
 
         self.pipeline = pipeline.make_pipeline(self.model)
 
